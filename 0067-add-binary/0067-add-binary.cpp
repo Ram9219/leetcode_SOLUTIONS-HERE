@@ -1,22 +1,23 @@
 class Solution {
 public:
     string addBinary(string a, string b) {
-        int i=a.length()-1;
-        int j=b.length()-1;
-        int carryout=0;
-        string s="";
-        while(i>=0 || j>=0|| carryout){
-            int sum=carryout;
-            if(i>=0){
-                sum+=a[i--]-'0';
+        int i = a.length() - 1;
+        int j = b.length() - 1;
+        string ans = "";
+        int carry = 0;
+        while (i >= 0 || j >= 0 || carry) {
+            int sum = carry;
+            if (i >= 0){
+                sum += a[i--] - '0';
             }
-            if(j>=0){
-                sum+=b[j--]-'0';
+
+            if (j >= 0){
+                sum += b[j--] - '0';
             }
-            s+=(sum%2)+'0';
-            carryout=(sum/2);
+            ans += (sum % 2) + '0';
+            carry = sum / 2;
         }
-        reverse(s.begin(),s.end());
-        return s;
+        reverse(ans.begin(), ans.end());
+        return ans;
     }
 };
