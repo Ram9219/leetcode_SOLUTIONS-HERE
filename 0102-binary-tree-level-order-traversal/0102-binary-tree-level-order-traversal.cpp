@@ -13,16 +13,15 @@ class Solution {
 public:
     vector<vector<int>> levelOrder(TreeNode* root) {
         vector<vector<int>>ans;
-        if(root==NULL)return ans;
         queue<TreeNode*>q;
+        if(root==NULL)return ans;
         q.push(root);
         while(!q.empty()){
             vector<int>level;
             int n=q.size();
             for(int i=0;i<n;i++){
-                TreeNode*front=q.front();
+                TreeNode* front=q.front();
                 q.pop();
-                //left me hai to queue me daalo aur current node ko level me 
                 if(front->left!=NULL)q.push(front->left);
                 if(front->right!=NULL)q.push(front->right);
                 level.push_back(front->val);
@@ -30,6 +29,5 @@ public:
             ans.push_back(level);
         }
         return ans;
-        
     }
 };
