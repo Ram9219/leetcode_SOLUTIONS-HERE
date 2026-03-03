@@ -25,7 +25,6 @@ public:
                 if(front->left!=NULL)q.push(front->left);
                 if(front->right!=NULL)q.push(front->right);
                 level.push_back(front->val);
-
             }
             ans.push_back(level);
         }
