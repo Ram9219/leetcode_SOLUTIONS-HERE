@@ -11,16 +11,22 @@
  */
 class Solution {
 public:
-void helper(TreeNode*root,vector<int>&ans){
-    if(root==NULL)return ;
-    ans.push_back(root->val);
-    helper(root->left,ans);
-    helper(root->right,ans);
-}
+//i am using stack here and what ios the idea to store the root on top pront then and if right and left push right and left then left will be on the top 
     vector<int> preorderTraversal(TreeNode* root) {
-        //NLR
         vector<int>ans;
-        helper(root,ans);
+        if(root==NULL)return ans;
+        stack<TreeNode*>st;
+        st.push(root);
+        while(!st.empty()){
+            root=st.top();
+            st.pop();
+            //right
+            if(root->right!=NULL)st.push(root->right);
+            //left
+            if(root->left!=NULL)st.push(root->left);
+            //store the top first value which follow the NLR
+            ans.push_back(root->val);
+        }
         return ans;
     }
 };
