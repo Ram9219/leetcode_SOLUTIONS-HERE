@@ -13,7 +13,21 @@ private:
             }
         }
     }
-
+void bfs(int node, vector<vector<int>>& adj, vector<int>& vis){
+    vis[node]=1;
+    queue<int>q;
+    q.push(node);
+    while(!q.empty()){
+        int cur=q.front();
+        q.pop();
+        for(int i=0;i<adj.size();i++){
+            if(!vis[i]&& adj[cur][i]==1){
+              vis[i]=1;
+              q.push(i);
+            }
+        }
+    }
+}
 public:
     int findCircleNum(vector<vector<int>>& isConnected) {
         int n = isConnected.size();
@@ -23,7 +37,7 @@ public:
         for (int i = 0; i < isConnected.size(); i++) {
             if (!vis[i]) {
                 count++;
-                dfs(i, isConnected, vis);
+                bfs(i, isConnected, vis);
             }
         }
         return count;
