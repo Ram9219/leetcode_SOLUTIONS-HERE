@@ -35,6 +35,26 @@ private:
         }
         return false;
     }
+    //now  here i am using the dfs code 
+    bool dfs(int row,int col,int prow,int pcol,vector<vector<char>>&adj,vector<vector<int>>&vis){
+        vis[row][col]=1;
+        int n = adj.size();
+        int m = adj[0].size();
+        int drow[]={-1,0,1,0};
+        int dcol[]={0,-1,0,1};
+        for(int i=0;i<4;i++){
+            int nrow=drow[i]+row;
+            int ncol=dcol[i]+col;
+            if(nrow>=0 && nrow<n && ncol>=0 && ncol<m && adj[nrow][ncol]==adj[row][col]){
+                if(!vis[nrow][ncol]){
+                    if(dfs(nrow,ncol,row,col,adj,vis))return true;
+                }else if(nrow!=prow || ncol!=pcol){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 public:
     bool containsCycle(vector<vector<char>>& adj) {
@@ -44,7 +64,7 @@ public:
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 if (!vis[i][j]) {
-                    if (detect(i, j, adj, vis)) {
+                    if (dfs(i, j,-1,-1, adj, vis)) {
                         return true;
                     }
                 }
