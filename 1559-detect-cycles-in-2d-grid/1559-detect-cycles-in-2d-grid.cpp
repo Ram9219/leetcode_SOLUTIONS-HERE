@@ -1,58 +1,50 @@
 class Solution {
 private:
-    bool bfs(int row, int col, vector<vector<char>>& grid, vector<vector<int>>& vis) {
-        int n = grid.size();
-        int m = grid[0].size();
-
-        queue<pair<pair<int,int>, pair<int,int>>> q;
-        // {{row,col}, {parent_row, parent_col}}
-
-        vis[row][col] = 1;
-        q.push({{row, col}, {-1, -1}});
-
+    bool detect(int ro, int co, vector<vector<char>>& adj,
+                vector<vector<int>>& vis) {
+        vis[ro][co] = 1;
+        int n = adj.size();
+        int m = adj[0].size();
+        queue<pair<pair<int, int>, pair<int, int>>> q;
+        //{{row,col},{parent_row,parent_col}}
+        q.push({{ro, co},
+                {-1, -1}}); // intially parent_row=-1 and parent_col=-1 rahengge
+                            // because we dont know that ki kaha se aay ahai
         int drow[] = {-1, 0, 1, 0};
-        int dcol[] = {0, 1, 0, -1};
-
+        int dcol[] = {0, -1, 0, 1};
         while (!q.empty()) {
-            auto front = q.front();
+            int row = q.front().first.first;
+            int col = q.front().first.second;
+            int prow = q.front().second.first;
+            int pcol = q.front().second.second;
             q.pop();
-
-            int ro = front.first.first;
-            int co = front.first.second;
-            int parent_row = front.second.first;
-            int parent_col = front.second.second;
-
             for (int i = 0; i < 4; i++) {
-                int nrow = ro + drow[i];
-                int ncol = co + dcol[i];
-
+                int nrow = row + drow[i];
+                int ncol = dcol[i] + col;
                 if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m &&
-                    grid[nrow][ncol] == grid[ro][co]) {
-
+                    adj[nrow][ncol] == adj[row][col]) {
                     if (!vis[nrow][ncol]) {
                         vis[nrow][ncol] = 1;
-                        q.push({{nrow, ncol}, {ro, co}});
+                        q.push({{nrow, ncol}, {row, col}});
                     }
-                    else if (nrow != parent_row || ncol != parent_col) {
+                    else if (nrow != prow || ncol != pcol){
                         return true;
                     }
-                }
+                } 
             }
         }
         return false;
     }
 
 public:
-    bool containsCycle(vector<vector<char>>& grid) {
-        int n = grid.size();
-        int m = grid[0].size();
-
+    bool containsCycle(vector<vector<char>>& adj) {
+        int n = adj.size();
+        int m = adj[0].size();
         vector<vector<int>> vis(n, vector<int>(m, 0));
-
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 if (!vis[i][j]) {
-                    if (bfs(i, j, grid, vis)) {
+                    if (detect(i, j, adj, vis)) {
                         return true;
                     }
                 }
