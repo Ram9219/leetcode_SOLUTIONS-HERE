@@ -1,35 +1,37 @@
 class Solution {
-    private:
-    bool dfs(int node,vector<vector<int>>&adj,vector<int>&vis,vector<int>&pathvis,vector<int>&check){
-        vis[node]=1;
-        pathvis[node]=1;
-        check[node]=0;
-        for(auto &it:adj[node]){
-            if(!vis[it]){
-                if(dfs(it,adj,vis,pathvis,check)==true){
-                    return true;
-                }
-            }
-            else if(pathvis[it]==1)return true;
-        }
-        pathvis[node]=0;
-        check[node]=1;
-        return false;
-    }
 public:
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
         int n=graph.size();
-        vector<int>vis(n,0),pathvis(n,0),check(n,0),ans;
+        vector<vector<int>>adj(n);
+        vector<int>indeg(n,0);
+        //reverse karna  hai 
         for(int i=0;i<n;i++){
-            if(!vis[i]){
-                dfs(i,graph,vis,pathvis,check);
+            //i->it
+            //it->i karna hai 
+            for(auto&it:graph[i]){
+                adj[it].push_back(i);
+                indeg[i]++;
             }
         }
+        queue<int>q;
         for(int i=0;i<n;i++){
-            if(check[i]==1){
-                ans.push_back(i);
+            if(indeg[i]==0){
+                q.push(i);
             }
         }
+        vector<int>ans;
+        while(!q.empty()){
+            int node=q.front();
+            q.pop();
+            ans.push_back(node);
+            for(auto&it:adj[node]){
+                indeg[it]--;
+                if(indeg[it]==0){
+                    q.push(it);
+                }
+            }
+        }
+        sort(begin(ans),end(ans));
         return ans;
     }
 };
