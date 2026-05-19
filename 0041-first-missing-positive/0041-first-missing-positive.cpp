@@ -4,10 +4,12 @@ public:
         unordered_set<int>st(begin(nums),end(nums));
         int ans=1;
         while(true){
-             if(st.find(ans)==st.end()){
-               return ans;
+             if(st.find(ans)!=st.end()){
+               ans++;
             }
-            ans++;
+            else{
+                return ans;
+            }
         }
         return ans;
     }
