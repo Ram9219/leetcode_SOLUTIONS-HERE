@@ -15,6 +15,7 @@ public:
     void find_Union(int u,int v){
         int pu=ult_parent(u);
         int pv=ult_parent(v);
+        if(pu==pv)return;
         if(rank[pu]<rank[pv]){
             parent[pu]=pv;
         }
