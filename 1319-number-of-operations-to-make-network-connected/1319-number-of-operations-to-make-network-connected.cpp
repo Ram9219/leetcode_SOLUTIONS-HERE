@@ -1,48 +1,58 @@
+class DisjointSet {
+public:
+    vector<int> rank, parent;
+    DisjointSet(int n) {
+        rank.resize(n + 1, 0);
+        parent.resize(n + 1);
+        for (int i = 0; i <= n; i++) {
+            parent[i] = i;
+        }
+    }
+    int ult_Parent(int node) {
+        if (node == parent[node])
+            return node;
+        return parent[node] = ult_Parent(parent[node]);
+    }
+    void find_Union_By_Rank(int u, int v) {
+        int pu = ult_Parent(u);
+        int pv = ult_Parent(v);
+        if (pu == pv)
+            return;
+        if (rank[pu] < rank[pv]) {
+            parent[pu] = pv;
+        } else if (rank[pv] < rank[pu]) {
+            parent[pv] = pu;
+        } else {
+            parent[pv] = pu;
+            rank[pu]++;
+        }
+    }
+};
+
 class Solution {
 public:
-    vector<int> parent, rank;
-
-    int find(int x) {
-        if (parent[x] != x)
-            parent[x] = find(parent[x]); 
-        return parent[x];
-    }
-
-    void Union(int x, int y) {
-        int px = find(x);
-        int py = find(y);
-
-        if (px == py) return;
-
-        if (rank[px] < rank[py]) {
-            parent[px] = py;
-        } else if (rank[px] > rank[py]) {
-            parent[py] = px;
-        } else {
-            parent[py] = px;
-            rank[px]++;
-        }
-    }
-
     int makeConnected(int n, vector<vector<int>>& connections) {
-        if (connections.size() < n - 1) return -1;
-
-        parent.resize(n);
-        rank.resize(n, 0);
-
-        for (int i = 0; i < n; i++)
-            parent[i] = i;
-
-        for (auto &c : connections) {
-            Union(c[0], c[1]);
+        int count = 0;
+        int extra = 0;
+        int m = connections.size();
+        DisjointSet d(n);
+        for (int i = 0; i < m; i++) {
+            int u = connections[i][0];
+            int v = connections[i][1];
+            if (d.ult_Parent(u) == d.ult_Parent(v)) {
+                extra++;
+            } else {
+                d.find_Union_By_Rank(u, v);
+            }
         }
-
-        int components = 0;
         for (int i = 0; i < n; i++) {
-            if (parent[i] == i)
-                components++;
+            if (d.ult_Parent(i) == i)
+                count++;
         }
-
-        return components - 1;
+        int ans = count - 1;
+        if (extra >= ans) {
+            return ans;
+        } else
+            return -1;
     }
 };
