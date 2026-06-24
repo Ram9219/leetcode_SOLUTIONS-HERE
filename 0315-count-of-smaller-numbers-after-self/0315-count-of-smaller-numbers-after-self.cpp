@@ -1,46 +1,62 @@
 class Solution {
 public:
-    vector<int> BIT;
-    int n;
+    vector<int> ans;
 
-    // BIT me value add karna
-    void update(int i, int val) {
-        while (i <= n) {
-            BIT[i] += val;
-            i += (i & -i);
+    void merge(vector<pair<int,int>>& arr, int left, int mid, int right) {
+        vector<pair<int,int>> temp;
+
+        int i = left;
+        int j = mid + 1;
+        int smaller = 0;
+
+        while (i <= mid && j <= right) {
+            if (arr[i].first <= arr[j].first) {
+                ans[arr[i].second] += smaller;
+                temp.push_back(arr[i++]);
+            } else {
+                smaller++;
+                temp.push_back(arr[j++]);
+            }
+        }
+
+        while (i <= mid) {
+            ans[arr[i].second] += smaller;
+            temp.push_back(arr[i++]);
+        }
+
+        while (j <= right) {
+            temp.push_back(arr[j++]);
+        }
+
+        for (int k = 0; k < temp.size(); k++) {
+            arr[left + k] = temp[k];
         }
     }
 
-    // prefix sum query (1 se i tak)
-    int query(int i) {
-        int sum = 0;
-        while (i > 0) {
-            sum += BIT[i];
-            i -= (i & -i);
-        }
-        return sum;
+    void divide(vector<pair<int,int>>& arr, int left, int right) {
+        if (left >= right) return;
+
+        int mid = left + (right - left) / 2;
+
+        divide(arr, left, mid);
+        divide(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
     }
 
     vector<int> countSmaller(vector<int>& nums) {
-        int sz = nums.size();
-        vector<int> ans(sz);
 
-        // 🔹 Coordinate Compression
-        vector<int> sorted = nums;
-        sort(sorted.begin(), sorted.end());
-        sorted.erase(unique(sorted.begin(), sorted.end()), sorted.end());
+        int n = nums.size();
+        ans.assign(n, 0);
 
-        n = sorted.size();
-        BIT.assign(n + 1, 0);
+        vector<pair<int,int>> arr; // {value,index}
 
-        // 🔹 Right se left traverse
-        for (int i = sz - 1; i >= 0; i--) {
-            int idx = lower_bound(sorted.begin(), sorted.end(), nums[i]) 
-                      - sorted.begin() + 1;
-
-            ans[i] = query(idx - 1); // kitne chhote hain
-            update(idx, 1);         // current element add
+        for (int i = 0; i < n; i++) {
+            arr.push_back({nums[i], i});
         }
+
+        divide(arr, 0, n - 1);
+
         return ans;
     }
 };
