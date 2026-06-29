@@ -12,37 +12,34 @@
  */
 class Solution {
 public:
-    // use the queuee and the map to store the order of the vertical nodes
     vector<vector<int>> verticalTraversal(TreeNode* root) {
+
         vector<vector<int>> ans;
-        if (!root)
+        if (!root) {
             return ans;
-        // make a queue {root},{col,row}
-        queue<pair<TreeNode*, pair<int, int>>> q;
-        // now mak ea map to store and hanle the one by one vertical nodes
-        map<int, map<int, multiset<int>>> mp;
-        q.push({root,{0,0}}); // intially passing the 0 row and 0 col and root as null
-        while (!q.empty()) {
-            auto front=q.front();
-            q.pop();
-            TreeNode*node=front.first;
-            int col=front.second.first;
-            int row=front.second.second;
-            mp[col][row].insert(node->val);
-            //aaab left  me jaake dekh 
-            if(node->left)q.push({{node->left},{col-1,row+1}});
-            if(node->right)q.push({{node->right},{col+1,row+1}});
         }
-        //now just we have to build the ans 
-        for(auto&colpair:mp){
-            vector<int>col;
-            for(auto& rowpair:colpair.second){
-                col.insert(col.end(),
-                rowpair.second.begin(),
-                rowpair.second.end()
-                );
+        map<int, map<int, multiset<int>>> mp;
+        queue<pair<TreeNode*, pair<int, int>>> q;
+        q.push({root, {0, 0}}); //{ node,col,row}
+        while (!q.empty()) {
+            auto node = q.front().first;
+            auto col = q.front().second.first;
+            auto row = q.front().second.second;
+            q.pop();
+            mp[col][row].insert(node->val);
+            if (node->left)
+                q.push({node->left, {col - 1, row + 1}});
+            if (node->right)
+                q.push({node->right, {col + 1, row + 1}});
+        }
+        for (auto row : mp) {
+            vector<int> temp;
+            for (auto col : row.second) {
+                for (auto val : col.second) {
+                    temp.push_back(val);
+                }
             }
-            ans.push_back(col);
+            ans.push_back(temp);
         }
         return ans;
     }
