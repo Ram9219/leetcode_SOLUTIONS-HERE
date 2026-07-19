@@ -1,39 +1,95 @@
+class Disjoint {
+public:
+    vector<int> parent, rank, size;
+    Disjoint(int n) {
+        rank.resize(n + 1, 0);
+        parent.resize(n + 1);
+        size.resize(n + 1,1);
+        iota(begin(parent), end(parent), 0);
+    }
+    int ult_parent(int node) {
+        if (node == parent[node])
+            return node;
+        return parent[node] = ult_parent(parent[node]);
+    }
+    void size_union(int u, int v) {
+    int pu = ult_parent(u);
+    int pv = ult_parent(v);
+
+    if (pu == pv) return;
+
+    if (size[pu] < size[pv]) {
+        parent[pu] = pv;
+        size[pv] += size[pu];
+    } else {
+        parent[pv] = pu;
+        size[pu] += size[pv];
+    }
+}
+   void Find_union_By_Rank(int u, int v) {
+    int pu = ult_parent(u);
+    int pv = ult_parent(v);
+
+    if (pu == pv) return;
+
+    if (rank[pu] < rank[pv]) {
+        parent[pu] = pv;
+        size[pv] += size[pu];
+    }
+    else if (rank[pv] < rank[pu]) {
+        parent[pv] = pu;
+        size[pu] += size[pv];
+    }
+    else {
+        parent[pv] = pu;
+        rank[pu]++;
+        size[pu] += size[pv];
+    }
+}
+};
 
 class Solution {
-private:
-    void dfs(int row, int col, vector<vector<int>>& grid,
-             vector<vector<int>>& vis, int &count) {
-        vis[row][col] = 1;
-        int n = grid.size();
-        int m = grid[0].size();
-        int drow[] = {-1, 0, 1, 0};
-        int dcol[] = {0, -1, 0, 1};
-        count++;
-        for (int i = 0; i < 4; i++) {
-            int nrow = row + drow[i];
-            int ncol = col + dcol[i];
-            if (nrow < n && nrow >= 0 && ncol < m && ncol >= 0 &&
-                !vis[nrow][ncol] && grid[nrow][ncol] == 1) {
-                dfs(nrow, ncol, grid, vis,count);
-            }
-        }
-    }
-
 public:
     int maxAreaOfIsland(vector<vector<int>>& grid) {
         int n = grid.size();
         int m = grid[0].size();
-        vector<vector<int>> vis(n, vector<int>(m, 0));
-        int cnt = 0;
+
+        Disjoint ds(n * m);
+
+        vector<pair<int, int>> dir = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                int count=0;
-                if (!vis[i][j] && grid[i][j] == 1) {
-                    dfs(i, j, grid, vis, count);
-                    cnt=max(count,cnt);
+
+                if (grid[i][j] == 0)
+                    continue;
+
+                int node = i * m + j;
+
+                for (auto& d : dir) {
+                    int ni = i + d.first;
+                    int nj = j + d.second;
+
+                    if (ni >= 0 && nj >= 0 && ni < n && nj < m &&
+                        grid[ni][nj] == 1) {
+                        int adj = ni * m + nj;
+                        ds.Find_union_By_Rank(node, adj);
+                    }
                 }
             }
         }
-        return cnt;
+
+        int ans = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    int p = ds.ult_parent(i * m + j);
+                    ans = max(ans, ds.size[p]);
+                }
+            }
+        }
+
+        return ans;
     }
 };
