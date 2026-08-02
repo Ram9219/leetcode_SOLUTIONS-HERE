@@ -1,14 +1,16 @@
 class Solution {
 public:
-//   Binary search approach will work here  divide and thechoose the 
-    int findPeakElement(vector<int>& arr) {
-        int n=arr.size();
-        if(n==1)return 0;
-        if(arr[0]>=arr[1])return 0;
-        if(arr[n-1]>=arr[n-2])return n-1;
-        for(int i=1;i<arr.size()-1;i++){
-            if(arr[i]>=arr[i-1] && arr[i]>=arr[i+1])return i;
+    int findPeakElement(vector<int>& nums) {
+        int left = 0;
+        int right = nums.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] < nums[mid + 1]) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
         }
-        return -1;
+        return left;
     }
 };
