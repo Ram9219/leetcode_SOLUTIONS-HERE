@@ -12,14 +12,14 @@
  */
 class Solution {
 public:
-    int solve(TreeNode* root, int &res) {
+    int solve(TreeNode* root, int& res) {
         if (!root)
             return 0;
         int l = solve(root->left, res);
         int r = solve(root->right, res);
         int temp = max(max(l, r) + root->val, root->val);
         int ans = max(temp, l + r + root->val);
-        res = max(ans, res);
+        res = max(res, ans);
         return temp;
     }
     int maxPathSum(TreeNode* root) {
