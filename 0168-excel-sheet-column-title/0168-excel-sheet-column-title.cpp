@@ -1,13 +1,13 @@
 class Solution {
 public:
-    string convertToTitle(int columnNumber) {
-        string result = "";
-        while (columnNumber > 0) {
-            columnNumber--;  // adjust to 0-based
-            char c = 'A' + (columnNumber % 26);
-            result = c + result;
-            columnNumber /= 26;
+    string convertToTitle(int n) {
+        string res = "";
+        while (n > 0) {
+            n--;
+            char c = 'A' + (n % 26);
+            res = c + res;
+            n /= 26;
         }
-        return result;
+        return res;
     }
 };
