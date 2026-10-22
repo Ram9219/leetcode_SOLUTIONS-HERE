@@ -1,45 +1,48 @@
+
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+
+using namespace std;
+using namespace __gnu_pbds;
+
+template <class T>
+using ordered_multiset = tree<
+    T,
+    null_type,
+    less<T>,
+    rb_tree_tag,
+    tree_order_statistics_node_update
+>;
+
 class Solution {
 public:
     vector<double> medianSlidingWindow(vector<int>& nums, int k) {
-        multiset<int> small, large;
-        vector<double> res;
+        vector<double> ans;
+        ordered_multiset<pair<int, int>> st;
 
-        auto balance = [&]() {
-            if (small.size() > large.size() + 1) {
-                large.insert(*small.rbegin());
-                small.erase(prev(small.end()));
-            } else if (large.size() > small.size()) {
-                small.insert(*large.begin());
-                large.erase(large.begin());
+        int n = nums.size();
+        int i = 0;
+
+        for (int j = 0; j < n; j++) {
+            st.insert({nums[j], j});
+
+            if (j - i + 1 < k) {
+                continue;
             }
-        };
 
-        for (int i = 0; i < nums.size(); ++i) {
-            if (small.empty() || nums[i] <= *small.rbegin()) {
-                small.insert(nums[i]);
+            if (k % 2 == 1) {
+                ans.push_back(st.find_by_order(k / 2)->first);
             } else {
-                large.insert(nums[i]);
-            }
-            balance();
-
-            if (i >= k) {
-                int out = nums[i - k];
-                if (small.find(out) != small.end()) {
-                    small.erase(small.find(out));
-                } else {
-                    large.erase(large.find(out));
-                }
-                balance();
+                double a = st.find_by_order(k / 2 - 1)->first;
+                double b = st.find_by_order(k / 2)->first;
+                ans.push_back((a + b) / 2.0);
             }
 
-            if (i >= k - 1) {
-                if (k % 2 == 1) {
-                    res.push_back((double)*small.rbegin());
-                } else {
-                    res.push_back(((double)*small.rbegin() + *large.begin()) / 2.0);
-                }
-            }
+            st.erase({nums[i], i});
+            i++;
         }
-        return res;
+
+        return ans;
     }
 };
